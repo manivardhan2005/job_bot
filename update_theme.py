@@ -167,3 +167,5 @@ if __name__ == "__main__":
     update_css()
     resize_icons()
     print("Done")
+
+
