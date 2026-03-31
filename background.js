@@ -147,3 +147,5 @@ async function identifyFieldsWithVision({ screenshots, fields, profile }) {
     return { error: 'Vision request failed: ' + e.message };
   }
 }
+
+
