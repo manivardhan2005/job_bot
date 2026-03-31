@@ -247,3 +247,5 @@ function loadProfile() {
 loadProfile();
 
 // Premium logic completely removed.
+
+
