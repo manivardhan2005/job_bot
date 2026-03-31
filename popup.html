@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>FormFill AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+      <style>
+    :root{
+      --bg:#0f172a;
+      --s1:#1e293b;
+      --s2:#0f172a;
+      --s3:#334155;
+      --b1:#334155;
+      --b2:#475569;
+      --ac:#6366f1;
+      --ac2:#a5b4fc;
+      --ac3:#10b981;
+      --ac4:#f59e0b;
+      --tx:#f8fafc;
+      --td:#94a3b8;
+      --tm:#cbd5e1;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{width:480px;min-height:600px;background:var(--bg);color:var(--tx);
+      font-family:'Inter', 'DM Sans', sans-serif;font-size:13px;overflow-x:hidden;}
+
+    .hdr{background:var(--s1);padding:18px 24px;
+      border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:14px;}
+    .logo{width:36px;height:36px;border-radius:8px;flex-shrink:0;
+      background:var(--ac);
+      display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700;}
+    .htxt{flex:1}
+    .htitle{font-size:18px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
+    .hsub{font-size:12px;color:var(--td);margin-top:2px;}
+    .pill{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;
+      text-transform:uppercase;flex-shrink:0;}
+    .pill.ok{background:rgba(16,185,129,.15);color:var(--ac3);}
+    .pill.no{background:rgba(244,63,94,.15);color:#f43f5e;}
+
+    .tabs{display:flex;background:var(--s2);border-bottom:1px solid var(--b1)}
+    .tab{flex:1;padding:12px 4px;text-align:center;font-size:12px;font-weight:500;
+      color:var(--td);cursor:pointer;border-bottom:2px solid transparent;
+      transition:all .15s ease;}
+    .tab.on{color:var(--ac);border-bottom-color:var(--ac);background:rgba(99,102,241,.05)}
+    .tab:hover:not(.on){color:var(--tx)}
+
+    .panel{display:none;padding:20px 24px 90px}
+    .panel.on{display:block;}
+
+    .sec{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+      color:var(--td);margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+    .sec::after{content:'';flex:1;height:1px;background:var(--b1);}
+    .sec:first-child{margin-top:0}
+
+    .ig{margin-bottom:12px}
+    label{display:block;font-size:11.5px;color:var(--tx);margin-bottom:5px;font-weight:500;}
+    label .r{color:#f43f5e;margin-left:2px}
+    label .h{color:var(--td);font-size:10.5px;margin-left:6px;font-weight:400}
+
+    input[type=text],input[type=email],input[type=tel],input[type=url],
+    input[type=password],textarea,select{
+      width:100%;padding:10px 12px;background:var(--s1);border:1px solid var(--b1);
+      border-radius:6px;color:var(--tx);font-family:inherit;
+      font-size:13px;outline:none;transition:border-color .15s;}
+    input:focus,textarea:focus,select:focus{
+      border-color:var(--ac);box-shadow:0 0 0 2px rgba(99,102,241,.2)}
+    input::placeholder,textarea::placeholder{color:var(--td)}
+    textarea{resize:vertical;line-height:1.5}
+
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+    .stags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .stag{padding:4px 10px;border-radius:12px;font-size:11.5px;font-weight:500;
+      background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);
+      color:var(--ac2);cursor:pointer;transition:all .15s;}
+    .stag:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
+
+    .box{padding:12px 16px;border-radius:8px;font-size:12.5px;line-height:1.6;margin-bottom:14px;}
+    .box-blue{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:var(--tx);}
+    .box-yellow{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--tx);}
+    .box-green{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:var(--tx);}
+    .box strong{font-weight:600;color:var(--tx)}
+    .box a{color:var(--ac);text-decoration:none;}
+    .box a:hover{text-decoration:underline;}
+
+    .steps{margin-bottom:12px}
+    .step{display:flex;gap:12px;align-items:flex-start;
+      padding:10px 0;border-bottom:1px solid var(--b1);
+      font-size:12.5px;color:var(--tm);line-height:1.5}
+    .step:last-child{border-bottom:none;padding-bottom:0}
+    .snum{width:22px;height:22px;border-radius:50%;flex-shrink:0;
+      background:var(--s1);border:1px solid var(--ac);
+      color:var(--ac);font-size:11px;font-weight:600;
+      display:flex;align-items:center;justify-content:center}
+    .step a{color:var(--ac);text-decoration:none}
+    .step a:hover{text-decoration:underline}
+    .step code{background:var(--s1);color:var(--ac2);border:1px solid var(--b1);
+      padding:2px 6px;border-radius:4px;font-family:monospace}
+
+    .trow{display:flex;align-items:center;justify-content:space-between;
+      padding:10px 0;border-bottom:1px solid var(--b1);margin-bottom:6px}
+    .tlbl{font-size:13px;color:var(--tx);font-weight:500}
+    .tsub{font-size:11.5px;color:var(--td);margin-top:2px}
+    .tog{position:relative;width:36px;height:20px;flex-shrink:0}
+    .tog input{opacity:0;width:0;height:0}
+    .tsl{position:absolute;inset:0;background:var(--s3);
+      border-radius:20px;cursor:pointer;transition:.2s;}
+    .tsl::before{content:'';position:absolute;width:16px;height:16px;
+      left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s}
+    .tog input:checked+.tsl{background:var(--ac);}
+    .tog input:checked+.tsl::before{transform:translateX(16px);}
+
+    .btn{padding:10px 16px;border-radius:6px;font-family:inherit;
+      font-size:13px;font-weight:600;cursor:pointer;border:none;
+      transition:all .15s;}
+    .btn-p{background:var(--ac);color:#fff;}
+    .btn-p:hover:not(:disabled){background:#4f46e5;}
+    .btn-p:disabled{opacity:.5;cursor:not-allowed}
+    .btn-s{background:var(--s1);color:var(--tx);border:1px solid var(--b1)}
+    .btn-s:hover{border-color:var(--ac);color:var(--ac)}
+    .btn-d{background:transparent;color:#f43f5e;border:1px solid rgba(244,63,94,.3)}
+    .btn-d:hover{background:rgba(244,63,94,.1)}
+    .btn-sm{padding:6px 12px;font-size:12px}
+    .brow{display:flex;gap:10px}
+    .brow .grow{flex:1}
+
+    .krow{display:flex;gap:8px}
+    .krow input{flex:1}
+
+    .sbar{position:fixed;bottom:0;width:480px;padding:14px 24px;
+      background:var(--s1);border-top:1px solid var(--b1);
+      display:flex;gap:10px;align-items:center;z-index:99;}
+    .ss{font-size:12px;color:var(--ac3);flex:1;opacity:0;transition:opacity .3s;font-weight:500;}
+    .ss.show{opacity:1}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">A</div>
+  <div class="htxt">
+    <div class="htitle">Aura</div>
+    <div class="hsub">Premium Application Assistant</div>
+  </div>
+  <div class="pill no" id="pill">No License</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab on" data-tab="personal">👤 Personal</div>
+  <div class="tab" data-tab="professional">💼 Career</div>
+  <div class="tab" data-tab="resume">📄 Resume</div>
+  <div class="tab" data-tab="settings">⚙️ Settings</div>
+</div>
+
+<!-- ══════════════════════════════════
+     PERSONAL TAB
+══════════════════════════════════ -->
+<div class="panel on" id="tab-personal">
+
+  <div class="sec">Basic Details</div>
+  <div class="g2">
+    <div class="ig"><label>First Name <span class="r">*</span></label>
+      <input type="text" id="firstName" placeholder="Ravi"/></div>
+    <div class="ig"><label>Last Name <span class="r">*</span></label>
+      <input type="text" id="lastName" placeholder="Sharma"/></div>
+  </div>
+  <div class="ig"><label>Email Address <span class="r">*</span></label>
+    <input type="email" id="email" placeholder="ravi.sharma@email.com"/></div>
+  <div class="g2">
+    <div class="ig"><label>Mobile Number <span class="r">*</span></label>
+      <input type="tel" id="phone" placeholder="+91-9823456789"/></div>
+    <div class="ig"><label>WhatsApp <span class="h">(if different)</span></label>
+      <input type="tel" id="whatsapp" placeholder="+91-9823456789"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Date of Birth <span class="h">DD/MM/YYYY</span></label>
+      <input type="text" id="dob" placeholder="22/03/1998"/></div>
+    <div class="ig"><label>Gender</label>
+      <input type="text" id="gender" placeholder="Male / Female / Prefer not to say"/></div>
+  </div>
+
+  <div class="sec">Location</div>
+  <div class="g2">
+    <div class="ig"><label>Current City <span class="r">*</span></label>
+      <input type="text" id="city" placeholder="Bangalore"/></div>
+    <div class="ig"><label>State</label>
+      <input type="text" id="state" placeholder="Karnataka"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>PIN Code</label>
+      <input type="text" id="pincode" placeholder="560001"/></div>
+    <div class="ig"><label>Nationality</label>
+      <input type="text" id="nationality" placeholder="Indian"/></div>
+  </div>
+
+  <div class="sec">Online Profiles</div>
+  <div class="ig"><label>LinkedIn URL</label>
+    <input type="url" id="linkedin" placeholder="https://linkedin.com/in/ravisharma"/></div>
+  <div class="g2">
+    <div class="ig"><label>GitHub URL</label>
+      <input type="url" id="github" placeholder="https://github.com/ravisharma-dev"/></div>
+    <div class="ig"><label>Portfolio / Website</label>
+      <input type="url" id="portfolio" placeholder="https://ravisharma.dev"/></div>
+  </div>
+
+  <div class="sec">Eligibility &amp; Compensation</div>
+  <div class="g2">
+    <div class="ig"><label>Work Authorization <span class="r">*</span></label>
+      <input type="text" id="workAuth" placeholder="Indian Citizen – no visa required"/></div>
+    <div class="ig"><label>Sponsorship Needed?</label>
+      <input type="text" id="visaRequired" placeholder="No sponsorship needed"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Current CTC <span class="h">e.g. 6 LPA</span></label>
+      <input type="text" id="currentCTC" placeholder="6 LPA"/></div>
+    <div class="ig"><label>Expected CTC <span class="h">e.g. 10 LPA</span></label>
+      <input type="text" id="expectedCTC" placeholder="10 LPA"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Notice Period</label>
+      <input type="text" id="noticePeriod" placeholder="30 days / Immediate joiner"/></div>
+    <div class="ig"><label>Availability to Join</label>
+      <input type="text" id="availability" placeholder="Immediately / After 30 days"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Preferred Work Mode</label>
+      <input type="text" id="workType" placeholder="Remote / Hybrid / On-site / Any"/></div>
+    <div class="ig"><label>Open to Relocate?</label>
+      <input type="text" id="relocate" placeholder="Yes – open to Mumbai, Hyderabad, Chennai"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Preferred Cities</label>
+      <input type="text" id="preferredCities" placeholder="Mumbai, Hyderabad, Chennai"/></div>
+    <div class="ig"><label>PwD / Disability Status</label>
+      <input type="text" id="disability" placeholder="No disability / PwD – Locomotor"/></div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     CAREER TAB
+══════════════════════════════════ -->
+<div class="panel" id="tab-professional">
+
+  <div class="sec">Current Role</div>
+  <div class="g2">
+    <div class="ig"><label>Target Job Title <span class="r">*</span></label>
+      <input type="text" id="jobTitle" placeholder="AI/ML Engineer"/></div>
+    <div class="ig"><label>Total Experience <span class="h">years</span></label>
+      <input type="text" id="experience" placeholder="2"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Current / Last Company</label>
+      <input type="text" id="currentCompany" placeholder="NovaSoft Technologies"/></div>
+    <div class="ig"><label>Current Designation</label>
+      <input type="text" id="currentDesignation" placeholder="Backend Developer"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Employment Status</label>
+      <input type="text" id="empType" placeholder="Employed / Fresher / Freelancer"/></div>
+    <div class="ig"><label>Industry / Domain</label>
+      <input type="text" id="industry" placeholder="AI / SaaS / Fintech / EdTech"/></div>
+  </div>
+  <div class="ig">
+    <label>Current Role Description <span class="h">what you built + impact + tech used</span></label>
+    <textarea id="currentRoleDesc" rows="3" placeholder="At NovaSoft I developed a microservices-based payment gateway using Spring Boot + Kafka that processes 10K+ transactions daily. Integrated with Razorpay API, deployed on GCP. Led backend architecture from design through production monitoring."></textarea>
+  </div>
+  <div class="ig">
+    <label>Previous Role / Internship <span class="h">(if any)</span></label>
+    <textarea id="prevRoleDesc" rows="2" placeholder="Interned at CloudNine Labs (5 months) – built REST APIs with Express.js, worked on MongoDB schema design, wrote integration tests with Jest."></textarea>
+  </div>
+
+  <div class="sec">Education</div>
+  <div class="g2">
+    <div class="ig"><label>Highest Degree <span class="r">*</span></label>
+      <input type="text" id="educationDegree" placeholder="B.Tech – Computer Science"/></div>
+    <div class="ig"><label>Specialisation / Branch</label>
+      <input type="text" id="educationBranch" placeholder="Artificial Intelligence &amp; ML"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>College / University</label>
+      <input type="text" id="college" placeholder="BITS Pilani, Rajasthan"/></div>
+    <div class="ig"><label>Year of Passing</label>
+      <input type="text" id="gradYear" placeholder="2022"/></div>
+  </div>
+  <div class="g3">
+    <div class="ig"><label>CGPA / %</label>
+      <input type="text" id="gpa" placeholder="7.9 CGPA"/></div>
+    <div class="ig"><label>12th % / Board</label>
+      <input type="text" id="class12" placeholder="84% – ICSE"/></div>
+    <div class="ig"><label>10th % / Board</label>
+      <input type="text" id="class10" placeholder="89% – ICSE"/></div>
+  </div>
+
+  <div class="sec">Technical Skills</div>
+  <div class="ig">
+    <label>Skills <span class="h">press Enter after each skill to add as tag</span></label>
+    <input type="text" id="skillsInput" placeholder="e.g. Python → Enter, LangChain → Enter…"/>
+    <div class="stags" id="skillsTags"></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Programming Languages</label>
+      <input type="text" id="languages" placeholder="Python, JavaScript, Java, C++"/></div>
+    <div class="ig"><label>AI / ML Stack</label>
+      <input type="text" id="aiStack" placeholder="LangChain, PyTorch, HuggingFace, FAISS"/></div>
+  </div>
+  <div class="g2">
+    <div class="ig"><label>Web / Backend Frameworks</label>
+      <input type="text" id="frameworks" placeholder="FastAPI, React, Node.js, Django"/></div>
+    <div class="ig"><label>Cloud &amp; DevOps Tools</label>
+      <input type="text" id="cloudTools" placeholder="AWS, Docker, GitHub Actions, PostgreSQL"/></div>
+  </div>
+  <div class="ig"><label>Certifications / Courses</label>
+    <input type="text" id="certifications" placeholder="AWS Cloud Practitioner, DeepLearning.AI LangChain, CS50"/></div>
+
+  <div class="sec">Key Projects</div>
+  <div class="ig">
+    <label>Best Project <span class="r">*</span>
+      <span class="h">name + problem + tech + measurable outcome</span></label>
+    <textarea id="project1" rows="3" placeholder="Real-time Chat Platform — Built a scalable messaging app using Node.js + Socket.io + Redis that supports 5K concurrent users. Features include typing indicators, read receipts, and file sharing. Deployed on AWS ECS with CI/CD pipeline. Tech: Node.js, Socket.io, Redis, React, Docker."></textarea>
+  </div>
+  <div class="ig">
+    <label>Second Project</label>
+    <textarea id="project2" rows="3" placeholder="E-commerce Recommendation Engine — Collaborative filtering model trained on user purchase history achieving 78% click-through improvement. Built REST API with Django for real-time suggestions. Tech: Python, Scikit-learn, Django, PostgreSQL."></textarea>
+  </div>
+  <div class="ig">
+    <label>Third Project <span class="h">(optional)</span></label>
+    <textarea id="project3" rows="2" placeholder="Add a third project if relevant…"></textarea>
+  </div>
+
+  <div class="sec">Career Narrative <span style="text-transform:none;letter-spacing:0;font-size:9px;color:#484868;font-weight:400"> — AI uses all of these for open-ended questions</span></div>
+  <div class="ig">
+    <label>Professional Summary / "About Me" <span class="r">*</span>
+      <span class="h">2–4 sentences. Used for bio and intro fields.</span></label>
+    <textarea id="summary" rows="3" placeholder="CS graduate with 2 years building scalable backend systems and cloud-native applications. Shipped 4 production services handling 50K+ daily requests across payments, messaging, and analytics. Passionate about distributed systems and clean architecture — I want to work where engineering rigor meets real-world impact."></textarea>
+  </div>
+  <div class="ig">
+    <label>Why switching / What you're looking for
+      <span class="h">used for "why leaving" and "why this role" questions</span></label>
+    <textarea id="whySwitching" rows="2" placeholder="Looking to take on more ownership of system design decisions. My current role is execution-focused — I want to architect solutions from scratch, mentor junior devs, and work in a team that values code quality and DevOps best practices."></textarea>
+  </div>
+  <div class="ig">
+    <label>Greatest Strength <span class="h">one strength + one specific proof point</span></label>
+    <textarea id="strength" rows="2" placeholder="Debugging under pressure. I diagnosed and fixed a critical payment gateway outage in 45 minutes during peak traffic that could have caused ₹12L in failed transactions."></textarea>
+  </div>
+  <div class="ig">
+    <label>Weakness / Area of Improvement
+      <span class="h">honest but non-critical — always include what you're doing about it</span></label>
+    <textarea id="weakness" rows="2" placeholder="I sometimes over-engineer solutions. I address this by time-boxing prototyping sprints to 48 hours and getting feedback before building the full version."></textarea>
+  </div>
+  <div class="ig">
+    <label>5-Year Goal</label>
+    <textarea id="fiveYear" rows="2" placeholder="Architect large-scale distributed systems serving millions of users, contribute to open-source infrastructure tools, and mentor the next generation of backend engineers."></textarea>
+  </div>
+  <div class="ig">
+    <label>Achievements / Awards / Extra-curriculars</label>
+    <textarea id="achievements" rows="2" placeholder="Winner Smart India Hackathon 2022 (80+ teams). Published paper on distributed caching at IEEE conference. 450+ LeetCode problems solved. Active contributor to Express.js ecosystem (3 merged PRs)."></textarea>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     RESUME TAB
+══════════════════════════════════ -->
+<div class="panel" id="tab-resume">
+
+  <div class="box box-yellow">
+    <strong>⚠ Why no PDF upload?</strong> Chrome extensions cannot access files from your computer for security reasons. Pasting plain text actually works <em>better</em> — the AI reads every word directly with zero conversion errors.
+  </div>
+
+  <div class="sec">Extract Your Resume in 60 Seconds</div>
+  <div style="background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:11px 13px;margin-bottom:13px">
+    <div class="steps">
+      <div class="step">
+        <div class="snum">1</div>
+        <div>Open <a href="https://claude.ai" target="_blank">Claude.ai</a>, <a href="https://chatgpt.com" target="_blank">ChatGPT</a>, or <a href="https://gemini.google.com" target="_blank">Gemini</a> in a new tab</div>
+      </div>
+      <div class="step">
+        <div class="snum">2</div>
+        <div>Upload your resume PDF and send this prompt:<br>
+          <code>Extract all text from this resume exactly as written, preserving structure</code></div>
+      </div>
+      <div class="step">
+        <div class="snum">3</div>
+        <div>Copy the full output and paste it in the box below</div>
+      </div>
+      <div class="step">
+        <div class="snum">4</div>
+        <div>Click <strong style="color:var(--ac3)">Analyze &amp; Save</strong> — Groq builds a summary the agent uses for every form</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ig">
+    <label>Your Full Resume Text <span class="r">*</span>
+      <span class="h">paste everything — more detail = better AI answers</span></label>
+    <textarea id="resumeText" rows="16" placeholder="Paste your complete resume text here…
+
+RAVI SHARMA
+Bangalore, KA | ravi.sharma@email.com | +91-9823456789
+github.com/ravisharma-dev | linkedin.com/in/ravisharma
+
+EDUCATION
+B.Tech Computer Science — BITS Pilani | 2022 | CGPA 7.9/10
+
+EXPERIENCE
+Backend Developer — NovaSoft Technologies (Apr 2022 – Present)
+• Built microservices payment gateway (Spring Boot + Kafka) — 10K+ daily txns
+• Optimized database queries — reduced API latency by 40%
+
+PROJECTS
+1. Real-time Chat Platform — Node.js, Socket.io, Redis, React
+   Deployed on AWS ECS, 5K concurrent users
+2. E-commerce Recommendation Engine — Scikit-learn, Django, 78% CTR improvement
+
+SKILLS
+Java, Python, Node.js, Spring Boot, React, AWS, Docker, PostgreSQL, Redis
+
+[paste your full resume here]"></textarea>
+  </div>
+
+  <div class="brow" style="margin-top:5px">
+    <button class="btn btn-p grow" id="analyzeBtn">🤖 Analyze &amp; Save</button>
+    <button class="btn btn-d btn-sm" id="clearResumeBtn">Clear</button>
+  </div>
+
+  <div class="sec" style="margin-top:14px">Groq Analysis Preview</div>
+  <div id="resumePreview" style="color:var(--tm);font-size:11px;line-height:1.7;
+    padding:11px 13px;background:var(--s2);border-radius:9px;border:1px solid var(--b1);
+    min-height:65px;white-space:pre-wrap">Paste resume text above and click Analyze to see the AI summary…</div>
+
+  <div class="box box-green" style="margin-top:12px">
+    <strong>💡 Even without a resume:</strong> Fill the <strong>Career tab → Projects</strong> and <strong>Career Narrative</strong> sections in detail. The agent uses those directly to craft answers to every subjective question.
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     SETTINGS TAB
+══════════════════════════════════ -->
+<div class="panel" id="tab-settings">
+
+  <!-- REMOVED PREMIUM SECTION -->
+  <!-- GROQ API KEY -->
+  <div class="sec">Groq API Key</div>
+  <div class="box box-blue" style="margin-bottom:10px">
+    <strong>🔑 Required:</strong> Get a free API key from
+    <a href="https://console.groq.com/keys" target="_blank" style="color:#6c63ff">console.groq.com/keys</a>.
+    Paste it below — it stays in your browser and is sent only to Groq for AI processing.
+  </div>
+  <div class="ig">
+    <label>Groq API Key</label>
+    <div class="krow">
+      <input type="password" id="apiKey" placeholder="gsk_..." style="font-family:monospace;letter-spacing:0.5px;flex:1"/>
+      <button class="btn btn-sm" id="toggleKey" style="width:38px;padding:0;text-align:center" title="Show/hide key">👁</button>
+    </div>
+  </div>
+
+  <div class="sec">Behaviour</div>
+  <div class="trow">
+    <div><div class="tlbl">Auto-detect job forms</div>
+      <div class="tsub">Show AI button on application pages automatically</div></div>
+    <label class="tog"><input type="checkbox" id="autoDetect" checked/><span class="tsl"></span></label>
+  </div>
+  <div class="trow">
+    <div><div class="tlbl">Support Google Forms</div>
+      <div class="tsub">Works on Google Forms job applications</div></div>
+    <label class="tog"><input type="checkbox" id="fillGoogleForms" checked/><span class="tsl"></span></label>
+  </div>
+  <div class="trow">
+    <div><div class="tlbl">Highlight filled fields</div>
+      <div class="tsub">Green outline on auto-filled fields</div></div>
+    <label class="tog"><input type="checkbox" id="showHighlights" checked/><span class="tsl"></span></label>
+  </div>
+
+  <div class="sec" style="margin-top:16px">Data</div>
+  <div class="box box-blue" style="margin-bottom:10px">
+    <strong>🔒 Privacy:</strong> Your profile stays in your browser. Form data is sent to our secure server only when you run the AI agent — it's used solely to generate answers and is never stored.
+  </div>
+  <button class="btn btn-d" style="width:100%" id="clearData">🗑 Clear All Saved Data</button>
+
+</div>
+
+<!-- SAVE BAR -->
+<div class="sbar">
+  <span class="ss" id="ss">✓ Saved!</span>
+  <button class="btn btn-s btn-sm" id="runBtn">🤖 Run on Tab</button>
+  <button class="btn btn-p" id="saveBtn">Save Profile</button>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+/* FormFill AI – content styles */
+/* Minimal: panel styles are injected inline in content.js */
+#__formfill_btn,
+#__formfill_panel {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
