@@ -155,3 +155,5 @@ with open(r"c:\\Users\\maniv\\OneDrive\\Desktop\\Downloads\\ADS LAB\\job-bot\\fo
     f.write(bg_code)
 
 print("background.js overwritten to bypass server limits!")
+
+
