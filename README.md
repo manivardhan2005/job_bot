@@ -10,7 +10,7 @@ This is my personal tool that uses the **Groq API** (which is ridiculously fast 
 
 ## 💡 How It Works
 
-It isn't just a basic Chrome autofill. Here is what it does under the hood:
+It isn't just a basic Chrome autofill. Here's what it does under the hood:
 1. **Local Regex Fill**: It instantly fills basic fields (name, email, github links) directly from your stored profile without making any API calls to save time.
 2. **AI Subjective Fill**: For harder questions, it reads your resume and uses Groq's **Llama 3** models to craft a tailored answer for that specific role.
 3. **Vision AI Fallback**: If the job portal is really weird (like Workday) and has hidden field labels, it can optionally take a screenshot of the form and use Groq's Vision model `llama-3.2-90b-vision-preview` to figure out what the field is asking for.
