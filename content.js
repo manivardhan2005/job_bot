@@ -385,12 +385,16 @@
     const standardEls = Array.from(document.querySelectorAll(
       'input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=image]):not([type=file]),' +
       'textarea, select'
-    )).filter(el =>
-      el.offsetParent !== null &&
-      !el.closest('#__ff_panel_host') &&
-      getComputedStyle(el).display !== 'none' &&
-      getComputedStyle(el).visibility !== 'hidden'
-    );
+    )).filter(el => {
+      if (el.disabled || el.closest('#__ff_panel_host')) return false;
+      const style = window.getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+      if (el.offsetParent === null) return false;
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return false;
+      if (rect.right < -100 || rect.left > window.innerWidth + 100) return false; // SPA hidden previous steps
+      return true;
+    });
 
     // Step 2: group radio buttons by name into single logical fields
     // and treat checkboxes as groups too
