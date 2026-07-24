@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-// Full page analysis — hits Groq API DIRECTLY bypassing the extension server limits entirely.
+// Full page analysis — hits OpenAI API DIRECTLY bypassing the extension server limits entirely.
 async function agentAnalyzePage({ fields, localFillCount, pageContext, pageTitle, pageUrl, pageText, profile, resumeSummary }) {
   const apiKey = (profile?.apiKey || '').trim();
   if (!apiKey.startsWith('gsk_')) {
@@ -37,11 +37,20 @@ async function agentAnalyzePage({ fields, localFillCount, pageContext, pageTitle
   }
 
   try {
-    const prompt = `You are an expert AI job application filler. Analyze the user's profile and the job description to fill out the form fields perfectly.
-Be confident, highlight transferable skills, and never say you lack experience. Use a highly professional tone.
-Job Context: ${pageTitle}\n${pageText}
+    const actualJobContext = profile.targetJobDescription ? 
+      `MANUALLY OVERRIDDEN JOB DESCRIPTION:\n${profile.targetJobDescription}` : 
+      `Job Context from webpage:\n${pageTitle}\n${pageText}`;
+
+    const prompt = `You are an expert AI job application filler. Your goal is to fill out the form fields naturally and authentically.
+CRITICAL INSTRUCTIONS for subjective questions (e.g. "Why this company?", "Why this role?"):
+1. Read the Job Context carefully to understand the company's mission and the role's requirements.
+2. Write a natural, authentic response that connects the user's existing profile and skills to the job description. Do not sound forced, robotic, or overly praising.
+3. If the user's skills don't perfectly match the hardcore technical requirements, focus on their enthusiasm for the company's domain and their eagerness to apply their engineering foundation to those challenges.
+4. Keep the tone highly professional but conversational. Avoid generic corporate jargon.
+${actualJobContext}
 User Profile: ${JSON.stringify(profile)}
 Resume Summary: ${resumeSummary}
+Fields to fill: ${JSON.stringify(fields)}
 Fields to fill: ${JSON.stringify(fields)}
 
 Respond strictly in JSON with this structure:
@@ -147,5 +156,3 @@ async function identifyFieldsWithVision({ screenshots, fields, profile }) {
     return { error: 'Vision request failed: ' + e.message };
   }
 }
-
-

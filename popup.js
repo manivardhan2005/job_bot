@@ -11,7 +11,7 @@ const TEXT_FIELDS = [
   'workAuth','visaRequired','currentCTC','expectedCTC',
   'noticePeriod','availability','workType','relocate','preferredCities','disability',
   // Career tab
-  'jobTitle','experience','currentCompany','currentDesignation','empType','industry',
+  'jobTitle','targetJobDescription','experience','currentCompany','currentDesignation','empType','industry',
   'currentRoleDesc','prevRoleDesc',
   'educationDegree','educationBranch','college','gradYear','gpa','class12','class10',
   'languages','aiStack','frameworks','cloudTools','certifications',
@@ -197,8 +197,14 @@ document.getElementById('runBtn').addEventListener('click', async () => {
   saveProfile();
   await new Promise(r => setTimeout(r, 250));
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab) chrome.tabs.sendMessage(tab.id, { action: 'triggerFill' });
-  window.close();
+  if (tab) {
+    try {
+      await chrome.tabs.sendMessage(tab.id, { action: 'triggerFill' });
+      window.close();
+    } catch (e) {
+      alert("Could not connect to the page. Please refresh the job application page and try again! (You cannot run this on the Chrome extensions page).");
+    }
+  }
 });
 
 // ── Clear all data ───────────────────────────────────────────────────────

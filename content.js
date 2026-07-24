@@ -141,7 +141,7 @@
       border-radius:7px;cursor:pointer;color:#6060a0;font-size:15px;line-height:28px;
       text-align:center;transition:all 0.15s;flex-shrink:0;}
     .ffp-close:hover{background:#ff5577;color:#fff;border-color:#ff5577;}
-    .ffp-body{flex:1;overflow-y:auto;padding:14px;}
+    .ffp-body{flex:1;overflow-y:auto;padding:14px;padding-bottom:140px;}
     .ffp-card{background:#131325;border:1px solid #252535;border-radius:12px;overflow:hidden;margin-bottom:12px;}
     .ffp-card-head{padding:8px 14px;background:#1a1a35;border-bottom:1px solid #252535;
       font-size:10px;font-weight:700;letter-spacing:0.9px;text-transform:uppercase;
@@ -158,7 +158,7 @@
     .ffp-field:last-child{border-bottom:none;}
     .ffp-field-icon{font-size:13px;width:18px;text-align:center;flex-shrink:0;margin-top:1px;}
     .ffp-field-info{flex:1;min-width:0;}
-    .ffp-field-label{color:#6060a0;font-size:10px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .ffp-field-label{color:#A0A0A0 !important;font-size:10px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .ffp-field-value{color:#e0e0ff;word-break:break-word;line-height:1.5;}
     .ffp-field-reason{color:#4040a0;font-size:10px;margin-top:2px;line-height:1.4;font-style:italic;}
     .ffp-log{background:#0a0a12;border-radius:8px;padding:10px 12px;
@@ -184,10 +184,10 @@
       line-height:1.6;margin-bottom:12px;display:none;}
     .ffp-btn{width:100%;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:700;
       cursor:pointer;border:none;transition:all 0.2s;font-family:inherit;letter-spacing:0.2px;}
-    .ffp-btn-primary{background:linear-gradient(135deg,#6c63ff,#8b5cf6);color:#fff;margin-bottom:8px;}
+    .ffp-btn-primary{background:linear-gradient(135deg,#6c63ff,#8b5cf6) !important;color:#fff !important;}
     .ffp-btn-primary:hover:not(:disabled){opacity:0.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,99,255,0.4);}
     .ffp-btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
-    .ffp-btn-secondary{background:#131325;color:#a0a0c0;border:1px solid #252535;}
+    .ffp-btn-secondary{background:#131325 !important;color:#a0a0c0 !important;border:1px solid #252535 !important;}
     .ffp-btn-secondary:hover{border-color:#6c63ff;color:#a0a0ff;}
     ::-webkit-scrollbar{width:3px;} ::-webkit-scrollbar-thumb{background:#252535;border-radius:2px;}
     </style>
@@ -228,7 +228,7 @@
           </div>
         </div>
       </div>
-      <div style="padding:14px 16px;border-top:1px solid #252535;flex-shrink:0;background:#0c0c14;">
+      <div style="padding:14px 16px;border-top:1px solid #252535;flex-shrink:0;background:#0c0c14;display:flex;flex-direction:column;gap:8px;">
         <div class="ffp-stats">
           <div class="ffp-stat"><div class="ffp-stat-n" id="__ff_n_filled">0</div><div class="ffp-stat-l">Filled</div></div>
           <div class="ffp-stat"><div class="ffp-stat-n ai" id="__ff_n_ai">0</div><div class="ffp-stat-l">AI Crafted</div></div>
@@ -1051,7 +1051,7 @@
       setProgress(68 + (i / plan.fills.length) * 30);
 
       if (fill.skip || !fill.value || String(fill.value).trim() === '') {
-        log('skip', `↷ "${fieldMeta.label.substring(0,40)}": ${fill.reasoning || 'skipped'}`);
+        log('skip', `↷ "${(fieldMeta.label || '').substring(0,40)}": ${fill.reasoning || 'skipped'}`);
         skipped++;
         document.getElementById('__ff_n_skip').textContent = skipped;
         await sleep(20);
@@ -1060,7 +1060,7 @@
 
       // ── Handle premium-locked fields ─────────────────────────────────
       if (String(fill.value).trim() === '__PREMIUM_REQUIRED__') {
-        log('skip', `⭐ "${fieldMeta.label.substring(0,40)}": Premium required for AI answer`);
+        log('skip', `⭐ "${(fieldMeta.label || '').substring(0,40)}": Premium required for AI answer`);
         skipped++;
         document.getElementById('__ff_n_skip').textContent = skipped;
         // Show premium badge next to the field
@@ -1080,13 +1080,13 @@
         updatePlanRow(fill.index, '✓', fill.fieldType === 'subjective' ? '#fbbf24' : '#43e97b');
         const tag = fill.fieldType === 'subjective' ? '✦' : '✓';
         log(fill.fieldType === 'subjective' ? 'ai' : 'success',
-          `${tag} "${fieldMeta.label.substring(0,35)}" → "${String(fill.value).substring(0,55)}${String(fill.value).length>55?'…':''}"`);
+          `${tag} "${(fieldMeta.label || '').substring(0,35)}" → "${String(fill.value).substring(0,55)}${String(fill.value).length>55?'…':''}"`);
         filled++;
         if (fill.fieldType === 'subjective') aiUsed++;
         document.getElementById('__ff_n_filled').textContent = filled;
         document.getElementById('__ff_n_ai').textContent     = aiUsed;
       } else {
-        log('skip', `↷ "${fieldMeta.label.substring(0,35)}": could not fill`);
+        log('skip', `↷ "${(fieldMeta.label || '').substring(0,35)}": could not fill`);
         skipped++;
         document.getElementById('__ff_n_skip').textContent = skipped;
       }
@@ -1231,13 +1231,7 @@
     const localCount = fills.filter(f => f.local).length;
     const skipCount  = fills.filter(f => f.skip).length;
 
-    body.innerHTML = `
-      <div style="display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;">
-        <span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(67,233,123,0.1);border:1px solid rgba(67,233,123,0.25);color:#43e97b;">⚡ ${localCount} local</span>
-        <span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#fbbf24;">✦ ${subjCount} AI-crafted</span>
-        <span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.25);color:#a0a0ff;">→ ${factCount} AI factual</span>
-        <span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(80,80,112,0.2);border:1px solid rgba(80,80,112,0.3);color:#505070;">○ ${skipCount} skipped</span>
-      </div>`;
+    body.innerHTML = '';
 
     fills.slice(0, 30).forEach(fill => {
       const field = allFields[fill.index];
@@ -1245,14 +1239,15 @@
       const isSub  = fill.fieldType === 'subjective';
       const isSkip = fill.skip;
       const isLocal = fill.local;
-      const icon   = isSkip ? '○' : isLocal ? '⚡' : isSub ? '✦' : '→';
-      const ic     = isSkip ? '#505070' : isLocal ? '#43e97b' : isSub ? '#fbbf24' : '#43e97b';
-      const vc     = isSkip ? '#404060' : isSub ? '#e8d8ff' : '#e0e0ff';
+      const icon   = isSkip ? '○' : isLocal ? '⚡' : '✦';
+      const ic     = isSkip ? '#505070' : isLocal ? '#43e97b' : '#fbbf24';
+      const vc     = isSkip ? '#404060' : '#e0e0ff';
       const maxLen = isSub ? 130 : 70;
       const val    = isSkip ? '<em style="color:#404060">skipped</em>'
-                   : esc((fill.value||'').substring(0, maxLen)) + ((fill.value||'').length > maxLen ? '…' : '');
-      const badge  = isLocal ? `<span style="font-size:9px;padding:1px 5px;border-radius:6px;background:rgba(67,233,123,0.12);color:#43e97b;border:1px solid rgba(67,233,123,0.2);margin-left:4px;">LOCAL</span>`
-                   : isSub ? `<span style="font-size:9px;padding:1px 5px;border-radius:6px;background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.2);margin-left:4px;">AI</span>` : '';
+                   : esc(String(fill.value||'').substring(0, maxLen)) + (String(fill.value||'').length > maxLen ? '…' : '');
+      let badge    = isLocal ? `<span style="font-size:9px;padding:1px 5px;border-radius:6px;background:rgba(67,233,123,0.12);color:#43e97b;border:1px solid rgba(67,233,123,0.2);margin-left:4px;">LOCAL</span>`
+                   : `<span style="font-size:9px;padding:1px 5px;border-radius:6px;background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.2);margin-left:4px;">AI</span>`;
+      if (isSkip) badge = '';
       body.innerHTML += `
         <div class="ffp-field" id="__ff_plan_row_${fill.index}">
           <div class="ffp-field-icon" style="color:${ic}">${icon}</div>
